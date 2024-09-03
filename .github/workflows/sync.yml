@@ -1,0 +1,33 @@
+name: Sync Forked Repository
+
+on:
+  schedule:
+    - cron: '0 1 * * *' # 每天凌晨 3 点运行
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0 # 确保克隆整个仓库以便操作
+
+    - name: Set up Git
+      run: |
+        git config --global user.name 'zhujinwei0527'
+        git config --global user.email 'zhujinwei0527@163.com'
+
+    - name: Add Upstream Repository
+      run: |
+        git remote add upstream https://github.com/TyCoding/langchat.git
+        git fetch upstream
+        git checkout main # 根据你的仓库的默认分支名进行替换
+        git merge upstream/main
+
+    - name: Push Changes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git push origin main
