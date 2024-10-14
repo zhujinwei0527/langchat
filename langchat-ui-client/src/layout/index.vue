@@ -16,10 +16,11 @@
 
 <script lang="ts" setup>
   import Sider from './Sider.vue';
-  import { SvgIcon } from '@/components/common';
   import { onMounted, ref, watch } from 'vue';
   import { useBasicLayout } from '@/hooks/useBasicLayout';
   import Login from '@/layout/login/Login.vue';
+  import MobileSider from '@/layout/MobileSider.vue';
+  import Profile from '@/layout/Profile.vue';
 
   const { isMobile } = useBasicLayout();
   const collapsed = ref(false);
@@ -33,44 +34,43 @@
 </script>
 
 <template>
-  <div class="h-screen w-full grid-mask">
+  <div
+    :class="isMobile ? 'items-start' : 'px-3 items-center'"
+    class="w-full overflow-hidden flex justify-center h-full"
+  >
     <Login />
 
-    <div
-      v-if="isMobile"
-      class="p-2 py-3 mb-0 bg-[#fafafa] border dark:border-[#ffffff17] bottom-b grid grid-cols-3"
-    >
-      <n-button class="flex !justify-start" text type="primary" @click="collapsed = !collapsed">
-        <SvgIcon class="text-2xl" icon="solar:list-linear" />
-      </n-button>
-      <div class="text-xl font-bold flex justify-center">LangChat</div>
-      <div class="flex justify-end"></div>
-    </div>
-
-    <n-layout class="h-full" has-sider>
-      <n-layout-sider
-        :collapsed="collapsed"
-        :collapsed-width="0"
-        :width="200"
-        @collapse="collapsed = true"
-        @expand="collapsed = false"
-      >
-        <div class="m-4 mr-2" style="height: calc(100vh - 33px)">
-          <Sider />
+    <div :class="isMobile ? '' : 'flex'" class="w-full">
+      <div v-if="isMobile" class="flex items-center justify-between px-2 py-2">
+        <div class="w-[94px]"></div>
+        <div class="text-xl flex-1 font-bold flex items-center justify-center">LangChat</div>
+        <div class="flex justify-end">
+          <Profile />
         </div>
-      </n-layout-sider>
-      <n-layout-content>
-        <RouterView v-slot="{ Component, route }">
-          <keep-alive>
-            <div
-              class="h-full m-4 ml-2 border rounded-lg overflow-hidden bg-white dark:bg-transparent dark:border-[#ffffff17]"
-              style="height: calc(100vh - 33px)"
-            >
-              <component :is="Component" :key="route.fullPath" />
-            </div>
-          </keep-alive>
-        </RouterView>
-      </n-layout-content>
-    </n-layout>
+      </div>
+
+      <div
+        :class="isMobile ? '' : 'flex'"
+        :style="isMobile ? 'height: calc(100vh - 100px)' : 'height: calc(100vh - 20px)'"
+        class="w-full overflow-y-auto"
+      >
+        <Sider v-if="!isMobile" />
+
+        <MobileSider v-if="isMobile" />
+
+        <div class="overflow-y-auto w-full h-full">
+          <RouterView v-slot="{ Component, route }">
+            <keep-alive>
+              <div
+                :class="isMobile ? '' : 'ml-3'"
+                class="p-0 border h-full rounded-lg overflow-y-auto bg-white dark:bg-transparent dark:border-[#ffffff17]"
+              >
+                <component :is="Component" :key="route.fullPath" />
+              </div>
+            </keep-alive>
+          </RouterView>
+        </div>
+      </div>
+    </div>
   </div>
 </template>

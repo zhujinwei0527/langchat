@@ -16,47 +16,19 @@
 
 <script lang="ts" setup>
   import { SvgIcon } from '@/components/common';
-  import { computed } from 'vue';
-  import { useDialog } from 'naive-ui';
   import { routesConst } from '@/router';
   import { useRouter } from 'vue-router';
-  import { useUserStore } from '@/store';
-  import defaultAvatar from '@/assets/avatar.jpg';
+  import Profile from '@/layout/Profile.vue';
 
-  const dialog = useDialog();
-  const userStore = useUserStore();
   const router = useRouter();
-  const user = computed(() => userStore.user);
-
-  async function onLogout() {
-    dialog.warning({
-      title: '提示',
-      content: '你确定注销当前账户吗',
-      positiveText: '注销',
-      negativeText: '取消',
-      onPositiveClick: async () => {
-        await userStore.logout();
-        userStore.changeIsLogin();
-      },
-    });
-  }
-  async function onLogin() {
-    userStore.changeIsLogin();
-  }
-
-  function onProfile() {
-    router.push({ name: 'Profile' });
-  }
 </script>
 
 <template>
   <div
-    class="h-full bg-[#fafafa] dark:bg-transparent flex border dark:border-[#ffffff17] flex-col w-full rounded-lg"
+    class="w-[190px] h-full bg-[#fafafa] dark:bg-transparent flex border dark:border-[#ffffff17] flex-col rounded-lg"
   >
     <n-scrollbar class="flex-1 w-full">
-      <div
-        class="flex flex-col gap-3 border-neutral-800 dark:border-[#ffffff17] pt-3 pl-3 pr-3 w-full"
-      >
+      <div class="flex flex-col gap-3 border-neutral-800 dark:border-[#ffffff17] pt-3 px-3 w-full">
         <div class="text-lg gap-2 text-center flex justify-center items-center">
           <img height="30" src="@/assets/login/logo.png" width="30" />
           <span class="font-bold">LangChat</span>
@@ -81,90 +53,10 @@
       </div>
     </n-scrollbar>
 
-    <div class="m-2 flex flex-col justify-center items-center gap-2 mb-4 bottom-0">
+    <div class="p-2 flex flex-col justify-center items-center gap-2 pb-3 bottom-0">
       <n-divider class="!my-0 !py-0" />
-      <!--      <n-space class="mb-2" vertical>
-				<n-popover placement="right" trigger="hover">
-					<template #trigger>
-						<n-button
-							v-if="appStore.theme == 'light'"
-							size="small"
-							text
-							@click="appStore.setTheme('dark')"
-						>
-							<template #icon>
-								<SvgIcon icon="ri:sun-foggy-line" />
-							</template>
-						</n-button>
-						<n-button
-							v-if="appStore.theme == 'dark'"
-							size="small"
-							text
-							@click="appStore.setTheme('light')"
-						>
-							<template #icon>
-								<SvgIcon icon="ri:moon-foggy-line" />
-							</template>
-						</n-button>
-					</template>
-					<span>{{ t('side.theme') }}</span>
-				</n-popover>
 
-				<n-popselect
-					v-model:value="language"
-					:options="languageOptions"
-					placement="right"
-					trigger="click"
-					@update-value="(value) => appStore.setLanguage(value)"
-				>
-					<n-button text>
-						<SvgIcon class="text-xl" icon="ph:translate-bold" />
-					</n-button>
-				</n-popselect>
-			</n-space>-->
-
-      <template v-if="user == null">
-        <n-avatar class="cursor-pointer !text-black" round>
-          <SvgIcon class="text-2xl" icon="solar:user-broken" />
-        </n-avatar>
-        <n-button
-          block
-          class="!rounded-lg !py-4"
-          secondary
-          size="small"
-          type="success"
-          @click="onLogin()"
-        >
-          <span class="text-center w-full">登录系统</span>
-        </n-button>
-      </template>
-      <div v-else class="flex w-full flex-col gap-3 mb-2 px-2">
-        <div class="flex gap-2 items-center px-2">
-          <n-avatar
-            :fallback-src="defaultAvatar"
-            :src="user.avatar ?? '/avatar.jpg'"
-            class="cursor-pointer w-[30px]"
-            round
-          />
-          <n-ellipsis style="max-width: 85px">
-            {{ user.username }}
-          </n-ellipsis>
-        </div>
-
-        <n-button class="!rounded-lg" size="small" tertiary type="info" @click="onProfile()">
-          <div class="w-full text-center flex justify-center items-center gap-2">
-            <SvgIcon class="text-lg" icon="iconamoon:profile" />
-            <span>个人中心</span>
-          </div>
-        </n-button>
-
-        <n-button class="!rounded-lg" secondary size="small" type="warning" @click="onLogout()">
-          <div class="w-full text-center flex justify-center items-center gap-2">
-            <SvgIcon class="text-lg" icon="material-symbols:logout" />
-            <span>注销账户</span>
-          </div>
-        </n-button>
-      </div>
+      <Profile />
     </div>
   </div>
 </template>
