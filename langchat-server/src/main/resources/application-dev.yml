@@ -51,6 +51,7 @@ langchat:
       port: 465
       from: <EMAIL>
       pass: <PASS>
+<<<<<<< HEAD
   vectorstore:
     pgvector:
       host: 127.0.0.1
@@ -60,4 +61,7 @@ langchat:
       database: langchat
       table: langchat_store
       dimension: 384
+=======
+
+>>>>>>> upstream/main
 

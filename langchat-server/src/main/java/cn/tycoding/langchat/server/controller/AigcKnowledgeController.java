@@ -19,20 +19,25 @@ package cn.tycoding.langchat.server.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.util.StrUtil;
 import cn.tycoding.langchat.biz.entity.AigcDocs;
+import cn.tycoding.langchat.biz.entity.AigcEmbedStore;
 import cn.tycoding.langchat.biz.entity.AigcKnowledge;
+import cn.tycoding.langchat.biz.entity.AigcModel;
 import cn.tycoding.langchat.biz.mapper.AigcDocsMapper;
+import cn.tycoding.langchat.biz.service.AigcEmbedStoreService;
 import cn.tycoding.langchat.biz.service.AigcKnowledgeService;
+import cn.tycoding.langchat.biz.service.AigcModelService;
 import cn.tycoding.langchat.common.annotation.ApiLog;
 import cn.tycoding.langchat.common.utils.MybatisUtil;
 import cn.tycoding.langchat.common.utils.QueryPage;
 import cn.tycoding.langchat.common.utils.R;
+import cn.tycoding.langchat.core.provider.EmbeddingProvider;
+import cn.tycoding.langchat.core.provider.KnowledgeStore;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -48,25 +53,37 @@ public class AigcKnowledgeController {
 
     private final AigcKnowledgeService kbService;
     private final AigcDocsMapper docsMapper;
+    private final AigcEmbedStoreService embedStoreService;
+    private final AigcModelService modelService;
+    private final EmbeddingProvider embeddingProvider;
+    private final KnowledgeStore knowledgeStore;
 
     @GetMapping("/list")
     public R<List<AigcKnowledge>> list(AigcKnowledge data) {
         List<AigcKnowledge> list = kbService.list(Wrappers.<AigcKnowledge>lambdaQuery().orderByDesc(AigcKnowledge::getCreateTime));
-        List<String> ids = list.stream().map(AigcKnowledge::getId).toList();
-        List<AigcDocs> docs = new ArrayList<>();
-        if (!ids.isEmpty()){
-            docs = docsMapper.selectList(Wrappers.<AigcDocs>lambdaQuery().in(AigcDocs::getKnowledgeId, ids));
-        }
-        Map<String, List<AigcDocs>> docsMap = docs.stream().collect(Collectors.groupingBy(AigcDocs::getKnowledgeId));
-        list.forEach(i -> {
-            List<AigcDocs> val = docsMap.get(i.getId());
-            if (val != null) {
-                i.setDocs(val);
-                i.setDocsNum(val.size());
-            }
-
-        });
+        build(list);
         return R.ok(list);
+    }
+
+    private void build(List<AigcKnowledge> records) {
+        Map<String, List<AigcEmbedStore>> embedStoreMap = embedStoreService.list().stream().collect(Collectors.groupingBy(AigcEmbedStore::getId));
+        Map<String, List<AigcModel>> embedModelMap = modelService.list().stream().collect(Collectors.groupingBy(AigcModel::getId));
+        Map<String, List<AigcDocs>> docsMap = docsMapper.selectList(Wrappers.lambdaQuery()).stream().collect(Collectors.groupingBy(AigcDocs::getKnowledgeId));
+        records.forEach(item -> {
+            List<AigcDocs> docs = docsMap.get(item.getId());
+            if (docs != null) {
+                item.setDocsNum(docs.size());
+                item.setTotalSize(docs.stream().filter(d -> d.getSize() != null).mapToLong(AigcDocs::getSize).sum());
+            }
+            if (item.getEmbedModelId() != null) {
+                List<AigcModel> list = embedModelMap.get(item.getEmbedModelId());
+                item.setEmbedModel(list == null ? null : list.get(0));
+            }
+            if (item.getEmbedStoreId() != null) {
+                List<AigcEmbedStore> list = embedStoreMap.get(item.getEmbedStoreId());
+                item.setEmbedStore(list == null ? null : list.get(0));
+            }
+        });
     }
 
     @GetMapping("/page")
@@ -77,21 +94,21 @@ public class AigcKnowledgeController {
                 .orderByDesc(AigcKnowledge::getCreateTime);
         Page<AigcKnowledge> iPage = kbService.page(page, queryWrapper);
 
-        Map<String, List<AigcDocs>> docsMap = docsMapper.selectList(Wrappers.lambdaQuery()).stream().collect(Collectors.groupingBy(AigcDocs::getKnowledgeId));
-        iPage.getRecords().forEach(i -> {
-            List<AigcDocs> docs = docsMap.get(i.getId());
-            if (docs != null) {
-                i.setDocsNum(docs.size());
-                i.setTotalSize(docs.stream().filter(d -> d.getSize() != null).mapToLong(AigcDocs::getSize).sum());
-            }
-        });
+        build(iPage.getRecords());
 
         return R.ok(MybatisUtil.getData(iPage));
     }
 
     @GetMapping("/{id}")
     public R<AigcKnowledge> findById(@PathVariable String id) {
-        return R.ok(kbService.getById(id));
+        AigcKnowledge knowledge = kbService.getById(id);
+        if (knowledge.getEmbedStoreId() != null) {
+            knowledge.setEmbedStore(embedStoreService.getById(knowledge.getEmbedStoreId()));
+        }
+        if (knowledge.getEmbedModelId() != null) {
+            knowledge.setEmbedModel(modelService.getById(knowledge.getEmbedModelId()));
+        }
+        return R.ok(knowledge);
     }
 
     @PostMapping
@@ -100,6 +117,7 @@ public class AigcKnowledgeController {
     public R add(@RequestBody AigcKnowledge data) {
         data.setCreateTime(String.valueOf(System.currentTimeMillis()));
         kbService.save(data);
+        knowledgeStore.init();
         return R.ok();
     }
 
@@ -108,6 +126,7 @@ public class AigcKnowledgeController {
     @SaCheckPermission("aigc:knowledge:update")
     public R update(@RequestBody AigcKnowledge data) {
         kbService.updateById(data);
+        knowledgeStore.init();
         return R.ok();
     }
 
@@ -116,6 +135,7 @@ public class AigcKnowledgeController {
     @SaCheckPermission("aigc:knowledge:delete")
     public R delete(@PathVariable String id) {
         kbService.removeKnowledge(id);
+        knowledgeStore.init();
         return R.ok();
     }
 }

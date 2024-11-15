@@ -16,21 +16,21 @@
 
 package cn.tycoding.langchat.core.provider.build;
 
-import cn.hutool.core.lang.Pair;
 import cn.hutool.core.util.StrUtil;
 import cn.tycoding.langchat.biz.entity.AigcModel;
 import cn.tycoding.langchat.common.enums.ChatErrorEnum;
 import cn.tycoding.langchat.common.exception.ServiceException;
-import cn.tycoding.langchat.core.consts.EmbedConst;
 import cn.tycoding.langchat.core.consts.ProviderEnum;
+import cn.tycoding.langchat.core.properties.LangChatProps;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
-import dev.langchain4j.model.embedding.DimensionAwareEmbeddingModel;
+import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.image.ImageModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiEmbeddingModel;
 import dev.langchain4j.model.openai.OpenAiImageModel;
 import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +40,10 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
+@AllArgsConstructor
 public class OpenAIModelBuildHandler implements ModelBuildHandler {
+
+    private final LangChatProps props;
 
     /**
      * 合并处理支持OpenAI接口的模型
@@ -129,7 +132,7 @@ public class OpenAIModelBuildHandler implements ModelBuildHandler {
     }
 
     @Override
-    public Pair<String, DimensionAwareEmbeddingModel> buildEmbedding(AigcModel model) {
+    public EmbeddingModel buildEmbedding(AigcModel model) {
         try {
             if (!whetherCurrentModel(model)) {
                 return null;
@@ -142,11 +145,12 @@ public class OpenAIModelBuildHandler implements ModelBuildHandler {
                     .apiKey(model.getApiKey())
                     .baseUrl(model.getBaseUrl())
                     .modelName(model.getModel())
-                    .dimensions(model.getDimensions())
+                    .dimensions(model.getDimension())
                     .logRequests(true)
                     .logResponses(true)
+                    .dimensions(1024)
                     .build();
-            return Pair.of(EmbedConst.CLAZZ_NAME_OPENAI, openAiEmbeddingModel);
+            return openAiEmbeddingModel;
         } catch (ServiceException e) {
             log.error(e.getMessage());
             throw e;

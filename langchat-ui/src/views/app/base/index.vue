@@ -23,7 +23,7 @@
   import { useMessage } from 'naive-ui';
   import { useAppStore } from '../store';
   import { useChatStore } from '@/views/chat/store/useChatStore';
-  import { getAppInfo, getMessages } from '@/api/aigc/chat';
+  import { getAppInfo } from '@/api/aigc/chat';
   import { formatToDateTime } from '@/utils/dateUtil';
 
   const appStore = useAppStore();
@@ -50,8 +50,9 @@
     appStore.knowledges = data.knowledges == null ? [] : data.knowledges;
     chatStore.modelId = data.modelId == null ? null : data.modelId;
     chatStore.appId = data.id;
-    chatStore.conversationId = data.id;
-    chatStore.messages = await getMessages(chatStore.conversationId!);
+    // 对于应用调试页面，不存储聊天记录
+    // chatStore.conversationId = data.id;
+    // chatStore.messages = await getMessages(chatStore.conversationId!);
     loading.value = false;
   }
 
@@ -89,7 +90,7 @@
       >
         <template #1>
           <div class="p-2 h-full m-2 bg-white rounded-lg">
-            <SettingsPage />
+            <SettingsPage @update="onSave" />
           </div>
         </template>
         <template #2>

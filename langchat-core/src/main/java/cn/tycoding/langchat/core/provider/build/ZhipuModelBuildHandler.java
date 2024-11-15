@@ -16,20 +16,20 @@
 
 package cn.tycoding.langchat.core.provider.build;
 
-import cn.hutool.core.lang.Pair;
 import cn.tycoding.langchat.biz.entity.AigcModel;
 import cn.tycoding.langchat.common.enums.ChatErrorEnum;
 import cn.tycoding.langchat.common.exception.ServiceException;
-import cn.tycoding.langchat.core.consts.EmbedConst;
 import cn.tycoding.langchat.core.consts.ProviderEnum;
+import cn.tycoding.langchat.core.properties.LangChatProps;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
-import dev.langchain4j.model.embedding.DimensionAwareEmbeddingModel;
+import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.image.ImageModel;
 import dev.langchain4j.model.zhipu.ZhipuAiChatModel;
 import dev.langchain4j.model.zhipu.ZhipuAiEmbeddingModel;
 import dev.langchain4j.model.zhipu.ZhipuAiImageModel;
 import dev.langchain4j.model.zhipu.ZhipuAiStreamingChatModel;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,10 @@ import java.time.Duration;
  */
 @Slf4j
 @Component
+@AllArgsConstructor
 public class ZhipuModelBuildHandler implements ModelBuildHandler {
+
+    private final LangChatProps props;
 
     @Override
     public boolean whetherCurrentModel(AigcModel model) {
@@ -127,7 +130,7 @@ public class ZhipuModelBuildHandler implements ModelBuildHandler {
     }
 
     @Override
-    public Pair<String, DimensionAwareEmbeddingModel> buildEmbedding(AigcModel model) {
+    public EmbeddingModel buildEmbedding(AigcModel model) {
         try {
             if (!whetherCurrentModel(model)) {
                 return null;
@@ -135,7 +138,7 @@ public class ZhipuModelBuildHandler implements ModelBuildHandler {
             if (!basicCheck(model)) {
                 return null;
             }
-            ZhipuAiEmbeddingModel zhipuAiEmbeddingModel = ZhipuAiEmbeddingModel
+            return ZhipuAiEmbeddingModel
                     .builder()
                     .apiKey(model.getApiKey())
                     .model(model.getModel())
@@ -146,8 +149,8 @@ public class ZhipuModelBuildHandler implements ModelBuildHandler {
                     .connectTimeout(Duration.ofMinutes(2))
                     .writeTimeout(Duration.ofMinutes(2))
                     .readTimeout(Duration.ofMinutes(2))
+                    .dimensions(1024)
                     .build();
-            return Pair.of(EmbedConst.CLAZZ_NAME_ZHIPU, zhipuAiEmbeddingModel);
         } catch (ServiceException e) {
             log.error(e.getMessage());
             throw e;

@@ -14,47 +14,32 @@
  * limitations under the License.
  */
 
-import { h } from 'vue';
-import { NTag } from 'naive-ui';
+import { ProviderEnum } from '@/views/aigc/model/provider';
 
-export const baseColumns = [
+export const LLMProviders: any[] = [
   {
-    title: '模型别名',
-    key: 'name',
+    model: ProviderEnum.OPENAI,
+    name: 'OpenAI',
+    models: ['text-embedding-3-small', 'text-embedding-3-large', 'text-embedding-ada-002'],
   },
   {
-    title: '模型版本',
-    key: 'model',
-    width: '160',
+    model: ProviderEnum.Q_FAN,
+    name: '百度千帆',
+    models: ['bge-large-zh', 'bge-large-en', 'tao-8k'],
   },
   {
-    title: '向量纬度',
-    key: 'dimension',
-    align: 'center',
-    width: '100',
-    render(row) {
-      return h(
-        NTag,
-        {
-          size: 'small',
-          type: 'error',
-        },
-        {
-          default: () => row.dimension,
-        }
-      );
-    },
+    model: ProviderEnum.Q_WEN,
+    name: '阿里百炼',
+    models: ['text-embedding-v3'],
   },
   {
-    title: 'Api Key',
-    key: 'apiKey',
+    model: ProviderEnum.ZHIPU,
+    name: '智谱清言',
+    models: ['embedding-2', 'embedding-3'],
   },
   {
-    title: 'Base Url',
-    key: 'baseUrl',
+    model: ProviderEnum.DOUYIN,
+    name: '抖音豆包',
+    models: ['text-240715', 'text-240515'],
   },
 ];
-
-export function getColumns() {
-  return baseColumns;
-}

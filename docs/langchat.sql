@@ -106,6 +106,9 @@ CREATE TABLE `aigc_docs_slice` (
 DROP TABLE IF EXISTS `aigc_knowledge`;
 CREATE TABLE `aigc_knowledge` (
                                   `id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主键',
+                                  `user_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '用户ID',
+                                  `embed_store_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '向量数据库ID',
+                                  `embed_model_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '向量模型ID',
                                   `name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '知识库名称',
                                   `des` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '描述',
                                   `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '封面',
@@ -117,7 +120,7 @@ CREATE TABLE `aigc_knowledge` (
 -- Records of aigc_knowledge
 -- ----------------------------
 BEGIN;
-INSERT INTO `aigc_knowledge` (`id`, `name`, `des`, `cover`, `create_time`) VALUES ('393704ac13f67fde5da674ddd0742b03', 'LangChat文档', 'LangChat官方文档', NULL, '1722766331165');
+INSERT INTO `aigc_knowledge` (`id`, `user_id`, `embed_store_id`, `embed_model_id`, `name`, `des`, `cover`, `create_time`) VALUES ('393704ac13f67fde5da674ddd0742b03', NULL, '5d57795705faccdf0ea7095a63c5e463', '1f0525bcf8721689f6a81851e5a0068b', 'LangChat文档', 'LangChat官方文档', NULL, '1722766331165');
 COMMIT;
 
 -- ----------------------------
@@ -166,7 +169,7 @@ CREATE TABLE `aigc_model` (
                               `image_size` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '图片大小',
                               `image_quality` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '图片质量',
                               `image_style` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '图片风格',
-                              `dimensions` int DEFAULT NULL COMMENT '向量维数',
+                              `dimension` int DEFAULT NULL COMMENT '向量维数',
                               PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='LLM模型配置表';
 
@@ -317,7 +320,7 @@ INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `ord
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('35dcd70c8a4008b554b71bf02ab07b61', '删除聊天记录', 'bdd70f2c1ee068c13bd3288eff07c8e2', NULL, 'chat:messages:clean', 'button', 3, NULL, NULL, 0, 0, 0, NULL);
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('374409ab56141b311ccb0f1847dd724a', 'AIGC平台', '0', 'aigc', 'aigc', 'menu', 2, 'CubeOutline', 'Layout', 0, 0, 1, 1);
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('3d1700109ece0187ba5e76217cd71995', '删除对话数据', 'f1ad3c056ac91fa5292a99f223155afc', NULL, 'aigc:message:delete', 'button', 2, NULL, NULL, 0, 0, 0, NULL);
-INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('43563b039d30b990f87af37783115ff4', '应用管理', 'a2ccfe694cd91cf159ad35626e4ea202', 'app', 'aigc:app', 'menu', 2, '', '/app/index', 0, 0, 1, 1);
+INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('43563b039d30b990f87af37783115ff4', 'AI应用管理', 'a2ccfe694cd91cf159ad35626e4ea202', 'list', 'aigc:app', 'menu', 2, '', '/app/index', 0, 0, 1, 1);
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('4488cb5271b1220647d4a83cfbcb7b15', '文档向量化', '43563b039d30b990f87af37783115ff4', NULL, 'aigc:embedding:docs', 'button', 5, NULL, NULL, 0, 0, 0, NULL);
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('510a89f01571d7eaa3b1393c8534ab6f', '删除应用', '43563b039d30b990f87af37783115ff4', NULL, 'aigc:app:delete', 'button', 3, NULL, NULL, 0, 0, 0, NULL);
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('5514605bae6ffdad3e4acff3e9e9742c', '新增应用', '43563b039d30b990f87af37783115ff4', NULL, 'aigc:app:add', 'button', 1, NULL, NULL, 0, 0, 0, NULL);
@@ -362,6 +365,10 @@ INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `ord
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('51ed9b1f27acc4695667821eac5f35cb', '删除文档', '97a5eac3bfeeabe4013d828b919786f7', null, 'aigc:docs:delete', 'button', 12, null, null, 0, 0, 1, null);
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('03917f40dfafba8c7ecb2b8843522a9e', '新增文档', '97a5eac3bfeeabe4013d828b919786f7', null, 'aigc:docs:add', 'button', 10, null, null, 0, 0, 1, null);
 INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('1c1fa2c50ff306144a0ea2528dcec96b', '重置密码', 'b29de942eeabc9419185951f57be11f3', null, 'upms:user:reset', 'button', 5, null, null, 0, 0, 1, null);
+INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('0adfa2c3c4d278aedd88019236c1425e', '向量库管理', '374409ab56141b311ccb0f1847dd724a', 'aigc/embed-store', 'embed-store', 'menu', 1, '', '/aigc/embed-store/index', 0, 0, 0, 1);
+INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('64a1109e89e060bd7018806c62c8e7d3', '修改向量库', '0adfa2c3c4d278aedd88019236c1425e', NULL, 'aigc:embed-store:update', 'button', 2, NULL, NULL, 0, 0, 0, NULL);
+INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('757e0f3fb5e153c15f3355a97f731f1e', '删除向量库', '0adfa2c3c4d278aedd88019236c1425e', NULL, 'aigc:embed-store:delete', 'button', 3, NULL, NULL, 0, 0, 0, NULL);
+INSERT INTO `sys_menu` (`id`, `name`, `parent_id`, `path`, `perms`, `type`, `order_no`, `icon`, `component`, `is_disabled`, `is_ext`, `is_keepalive`, `is_show`) VALUES ('af8e11cdd57a935bbcf36f8e53cc889f', '新增向量库', '0adfa2c3c4d278aedd88019236c1425e', NULL, 'aigc:embed-store:add', 'button', 1, NULL, NULL, 0, 0, 0, NULL);
 COMMIT;
 
 -- ----------------------------
@@ -417,6 +424,7 @@ INSERT INTO `sys_role_menu` (`role_id`, `menu_id`) VALUES ('d0d0cab7c147d865d35e
 INSERT INTO `sys_role_menu` (`role_id`, `menu_id`) VALUES ('d0d0cab7c147d865d35e70fc62f2f19e', 'bdd70f2c1ee068c13bd3288eff07c8e2');
 INSERT INTO `sys_role_menu` (`role_id`, `menu_id`) VALUES ('d0d0cab7c147d865d35e70fc62f2f19e', 'c212381ae7a2333416a18e486f044777');
 INSERT INTO `sys_role_menu` (`role_id`, `menu_id`) VALUES ('d0d0cab7c147d865d35e70fc62f2f19e', 'f1ad3c056ac91fa5292a99f223155afc');
+INSERT INTO `sys_role_menu` (`role_id`, `menu_id`) VALUES ('d0d0cab7c147d865d35e70fc62f2f19e', '0adfa2c3c4d278aedd88019236c1425e');
 COMMIT;
 
 -- ----------------------------
@@ -463,5 +471,23 @@ BEGIN;
 INSERT INTO `sys_user_role` (`user_id`, `role_id`) VALUES ('827450c4a39b3c4c14fdfb06f454bfb3', 'd0d0cab7c147d865d35e70fc62f2f19e');
 INSERT INTO `sys_user_role` (`user_id`, `role_id`) VALUES ('91b4524a46a949601e7f3b004ed76034', '2827e950043adf67b7fe10306d3e94e4');
 COMMIT;
+
+-- ----------------------------
+-- Table structure for aigc_embed_store
+-- ----------------------------
+DROP TABLE IF EXISTS `aigc_embed_store`;
+CREATE TABLE `aigc_embed_store` (
+                                    `id` varchar(50) NOT NULL COMMENT '主键',
+                                    `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '别名',
+                                    `provider` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '供应商',
+                                    `host` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '地址',
+                                    `port` int DEFAULT NULL COMMENT '端口',
+                                    `username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '用户名',
+                                    `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '密码',
+                                    `database_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '数据库名称',
+                                    `table_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '表名称',
+                                    `dimension` int DEFAULT NULL COMMENT '向量维数',
+                                    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Embedding向量数据库配置表';
 
 SET FOREIGN_KEY_CHECKS = 1;

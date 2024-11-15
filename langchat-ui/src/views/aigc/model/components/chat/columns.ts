@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ProviderEnum } from './consts';
+import { ProviderEnum } from '@/views/aigc/model/provider';
 
 export const baseColumns = [
   {
@@ -22,23 +22,24 @@ export const baseColumns = [
     key: 'name',
   },
   {
-    title: '模型名称',
+    title: '模型版本',
     key: 'model',
+    width: '140',
   },
   {
     title: '回复上限',
     key: 'responseLimit',
-    width: '120',
+    width: '100',
   },
   {
     title: '生成随机性',
     key: 'temperature',
-    width: '120',
+    width: '100',
   },
   {
     title: 'Top P',
     key: 'topP',
-    width: '120',
+    width: '100',
   },
 ];
 
