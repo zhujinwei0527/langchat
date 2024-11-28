@@ -4,13 +4,18 @@
 
 LangChat是Java生态下企业级AIGC项目解决方案，在RBAC权限体系的基础上，集成AIGC大模型能力，帮助企业快速定制AI知识库、企业AI机器人。
  
-**支持的AI大模型：** 智谱清言 / 阿里通义 / 百度千帆 / DeepSeek / 抖音豆包 / 零一万物 / 讯飞星火 / OpenAI / Gemini / Ollama / Azure / Claude 等大模型。
+**支持的AI大模型：** Gitee AI / 阿里通义 / 百度千帆 / DeepSeek / 抖音豆包 / 智谱清言 / 零一万物 / 讯飞星火 / OpenAI / Gemini / Ollama / Azure / Claude 等大模型。
 
 [English](./README_en.md)
 
 - 网站文档：[http://langchat.cn/](http://langchat.cn/)
 - 后台地址：[http://backend.langchat.cn/](http://backend.langchat.cn/)
 - 前台地址：[http://front.langchat.cn/](http://front.langchat.cn/)
+
+**开源地址：**
+
+- Gitee：https://gitee.com/langchat/langchat
+- Github：https://github.com/tycoding/langchat
 
 **注意：** 如果想和作者深入交流LangChat开发规划、AIGC产品研发、变现等方式，**可以请作者喝一杯咖啡加入LangChat交流群**
 
@@ -66,11 +71,12 @@ Copyright (c) 2024-present, TyCoding.
 
 ## 版本更新
 
-- 2024.7.15 LangChat正式发布、公开仓库
-- 2024.7.19 LangChat完成分离Server、Client端业务架构，保持业务分离
-- 2024.7.21 LangChat完成多存储方案，支持本地、七牛云、阿里云、腾讯云OSS服务
+- 2024.11.27 支持Gitee AI模型接入
+- 2024.11.16 重新调整项目结构设计、分包设计
 - 2024.7.30 LangChat开发Web SDK，接入API、WEB消息渠道，支持Iframe嵌入
-- 2024.11.16 重构项目架构
+- 2024.7.21 LangChat完成多存储方案，支持本地、七牛云、阿里云、腾讯云OSS服务
+- 2024.7.19 LangChat完成分离Server、Client端业务架构，保持业务分离
+- 2024.7.15 LangChat正式发布、公开仓库
 
 ## Star History
 
@@ -79,7 +85,6 @@ Copyright (c) 2024-present, TyCoding.
 ## 预览
 
 ![](docs/imgs/MIK-jJfiee.png)
-
 
 ![](docs/imgs/MIK-qQTgUW.png)
 
