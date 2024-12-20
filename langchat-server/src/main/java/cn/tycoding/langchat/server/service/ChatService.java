@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-package cn.tycoding.langchat.common.core;
+package cn.tycoding.langchat.server.service;
 
-import cn.tycoding.langchat.common.core.properties.AuthProps;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import cn.tycoding.langchat.ai.biz.entity.AigcOss;
+import cn.tycoding.langchat.common.ai.dto.ChatReq;
+import cn.tycoding.langchat.common.ai.dto.ImageR;
 
 /**
  * @author tycoding
- * @since 2024/1/15
+ * @since 2024/1/4
  */
-@Configuration
-@EnableConfigurationProperties({
-        AuthProps.class,
-})
-public class CommonAutoConfiguration {
+public interface ChatService {
 
+    void chat(ChatReq req);
+
+
+    /**
+     * 文本请求
+     */
+    String text(ChatReq req);
+
+    /**
+     * 文生图
+     */
+    AigcOss image(ImageR req);
 }

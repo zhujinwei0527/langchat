@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package cn.tycoding.langchat.common.core;
+import {AxiosProgressEvent} from 'axios';
+import {http} from '../../utils/http/axios';
 
-import cn.tycoding.langchat.common.core.properties.AuthProps;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-
-/**
- * @author tycoding
- * @since 2024/1/15
- */
-@Configuration
-@EnableConfigurationProperties({
-        AuthProps.class,
-})
-public class CommonAutoConfiguration {
-
+export function uploadApi(
+  data: any,
+  onUploadProgress?: (progressEvent: AxiosProgressEvent) => void
+) {
+  return http.request({
+    url: `/aigc/oss/upload`,
+    method: 'post',
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    onUploadProgress,
+  });
 }

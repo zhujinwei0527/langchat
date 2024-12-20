@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-package cn.tycoding.langchat.common.core;
-
-import cn.tycoding.langchat.common.core.properties.AuthProps;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-
-/**
- * @author tycoding
- * @since 2024/1/15
- */
-@Configuration
-@EnableConfigurationProperties({
-        AuthProps.class,
-})
-public class CommonAutoConfiguration {
-
+export interface ChatState {
+  messages: any[];
+  modelId: string | null;
+  modelName: string | null;
+  modelProvider: string | null;
+  conversationId: string | null;
+  appId: any;
 }
